@@ -134,6 +134,34 @@ class Body extends React.Component {
         visible: false,
       });
 
+      // Pendo track event: fired once the new record is actually created
+      const { value, fieldOne, fieldTwo, fieldThree } =
+        this.state.addNewFormData;
+      const recordType = value.toLowerCase(); // accounts | contacts | opportunities
+
+      // fieldTwo / fieldThree mean different things per type (see
+      // fieldTwoList / fieldThreeList), so give them meaningful names.
+      // Values are sent as typed (text), including ARR, email and phone.
+      const extras = {
+        accounts: { rep: fieldTwo, territory: fieldThree },
+        opportunities: { contact: fieldTwo, arr: fieldThree },
+        contacts: { email: fieldTwo, phone: fieldThree },
+      }[recordType];
+
+      const properties = {
+        recordType,
+        createdFrom: window.location.pathname, // page where ADD NEW was clicked
+        name: fieldOne,
+        ...extras,
+      };
+
+      // Don't send blank fields
+      Object.keys(properties).forEach((key) => {
+        if (properties[key] === '') delete properties[key];
+      });
+
+      window.pendo?.track?.('Record Created', properties);
+
       // Set local Storage objs
       localStorage.setItem(
         'addNewFormData',

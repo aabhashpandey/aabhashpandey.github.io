@@ -32,3 +32,18 @@ Or to test automation changes:
 ```
 npm run automateusage
 ```
+
+## Deploying to GitHub Pages
+
+The Pendo API key is not stored in this repo; `public/index.html` keeps the
+`YOUR-PENDO-API-KEY-HERE` placeholder. `predeploy` builds the app and then runs
+`scripts/patch-pendo-key.js`, which swaps the placeholder in `build/index.html`
+for the key in the `PENDO_API_KEY` environment variable before the build is
+published to the `gh-pages` branch:
+
+```
+PENDO_API_KEY=<your-key> yarn deploy
+```
+
+The deploy stops with an error if `PENDO_API_KEY` is missing or the placeholder
+is not found in the build.
